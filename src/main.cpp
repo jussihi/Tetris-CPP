@@ -82,6 +82,7 @@ int main(void)
             currTime = glfwGetTime();
             if(currTime - lastTick >= cTickRate)
             {
+                std::cout << "tick() called from main" << std::endl;
                 lastTick = currTime;
                 tetrisGame->tick();
             }
@@ -101,8 +102,6 @@ int main(void)
         {
             break;
         }
-
-        std::cout << "In game loop" << std::endl;
     }
 
     std::cout << "out" << std::endl;

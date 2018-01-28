@@ -36,36 +36,36 @@ TetrisBlock::TetrisBlock(blockType w_type)
         }
         case tT:
         {
-            m_body = {{cEmpty, cBlue, cEmpty},
-                      {cBlue, cBlue, cBlue},
+            m_body = {{cEmpty, cBlue,  cEmpty},
+                      {cBlue,  cBlue,  cBlue },
                       {cEmpty, cEmpty, cEmpty}};
             break;
         }
         case tS:
         {
-            m_body = {{cEmpty, cBlue, cBlue},
-                      {cBlue, cBlue, cEmpty},
+            m_body = {{cEmpty, cBlue,  cBlue },
+                      {cBlue,  cBlue,  cEmpty},
                       {cEmpty, cEmpty, cEmpty}};
             break;
         }
         case tZ:
         {
-            m_body = {{cBlue, cBlue, cEmpty},
-                      {cEmpty, cBlue, cBlue},
+            m_body = {{cBlue,  cBlue,  cEmpty},
+                      {cEmpty, cBlue,  cBlue },
                       {cEmpty, cEmpty, cEmpty}};
             break;
         }
         case tJ:
         {
-            m_body = {{cBlue, cEmpty, cEmpty},
-                      {cBlue, cBlue, cBlue},
+            m_body = {{cBlue,  cEmpty, cEmpty},
+                      {cBlue,  cBlue,  cBlue },
                       {cEmpty, cEmpty, cEmpty}};
             break;
         }
         case tL:
         {
-            m_body = {{cEmpty, cEmpty, cBlue},
-                      {cBlue, cBlue, cBlue},
+            m_body = {{cEmpty, cEmpty, cBlue },
+                      {cBlue,  cBlue,  cBlue },
                       {cEmpty, cEmpty, cEmpty}};
             break;
         }
@@ -84,7 +84,7 @@ TetrisBlock::~TetrisBlock()
 /*
  *  TETRIS PLAYGRID CLASS FUNCTIONS
  */
-TetrisGrid::TetrisGrid(uint32_t w_rows, uint32_t w_cols) : m_rows(w_rows), m_cols(w_cols)
+TetrisGrid::TetrisGrid(uint32_t w_rows, uint32_t w_cols) : m_rows(w_rows), m_cols(w_cols), m_currBlockRow(0), m_currBlockCol(0), m_currBlock(tI), m_nextBlock(tI)
 {
     m_tiles.resize(w_cols);
     for(std::vector<BlockColor>& vec : m_tiles)
@@ -111,7 +111,7 @@ void TetrisGrid::setTileColor(const BlockColor& w_color, const uint32_t& w_row, 
     m_tiles[w_col][w_row] = w_color;
 }
 
-bool TetrisGrid::canBlockFit(uint32_t& w_row, uint32_t& w_col, const TetrisBlock& w_block) const
+bool TetrisGrid::canBlockFit(const uint32_t& w_row, const uint32_t& w_col, const TetrisBlock& w_block) const
 {
     uint32_t rowCheck, colCheck;
     for(uint32_t blockRow = 0; blockRow < w_block.m_body.size(); blockRow++)
@@ -138,11 +138,19 @@ bool TetrisGrid::isOccupied(uint32_t& w_row, uint32_t& w_col) const
     return false;
 }
 
+void TetrisGrid::moveDown()
+{
+    if(canBlockFit(m_currBlockRow + 1, m_currBlockCol, m_currBlock))
+    {
+        m_currBlockRow++;
+    }
+}
+
 
 /*
  *  GAME PLACEHOLDER CLASS FUNCTIONS
  */
-TetrisGame::TetrisGame (TetrisGrid& w_tetrisGrid, const double& w_tickDelta) : m_tetrisGrid(w_tetrisGrid), m_tickDelta(w_tickDelta)
+TetrisGame::TetrisGame (TetrisGrid& w_tetrisGrid, const double& w_tickDelta) : m_tetrisGrid(w_tetrisGrid), m_tickDelta(w_tickDelta), m_moveDownDelta(0.8), m_moveDownTimer(0.0)
 {
 
 }
@@ -156,6 +164,14 @@ TetrisGame::~TetrisGame ()
 // ( one tick every 1 / FPS second)
 void TetrisGame::tick()
 {
+    m_moveDownTimer += m_tickDelta;
 
+    if(m_moveDownTimer >= m_moveDownDelta)
+    {
+        // TODO: do correction of the overflow time
+        // also do it elsewhere too...
+        m_tetrisGrid.moveDown();
+        m_moveDownTimer = 0.0;
+    }
 }
 

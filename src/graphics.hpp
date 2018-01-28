@@ -12,5 +12,4 @@
 #include <GLFW/glfw3.h>
 
 
-
 #endif /* GRAPHICS_HPP_ */

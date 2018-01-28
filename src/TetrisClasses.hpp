@@ -32,7 +32,9 @@ public:
     void clearAll();
 
     // can put into private?
-    bool canBlockFit(uint32_t& w_row, uint32_t& w_col, const TetrisBlock& w_block) const;
+    bool canBlockFit(const uint32_t& w_row, const uint32_t& w_col, const TetrisBlock& w_block) const;
+
+    void moveDown();
 
 private:
 
@@ -44,6 +46,12 @@ private:
     uint32_t m_cols;
 
     std::vector<std::vector<BlockColor>> m_tiles;
+
+    uint32_t m_currBlockRow;
+    uint32_t m_currBlockCol;
+
+    TetrisBlock m_currBlock;
+    TetrisBlock m_nextBlock;
 };
 
 
@@ -58,6 +66,10 @@ public:
 private:
     TetrisGrid& m_tetrisGrid;
     double m_tickDelta;
+    double m_moveDownDelta;
+
+    // timers
+    double m_moveDownTimer;
 };
 
 #endif /* TETRISCLASSES_HPP_ */
