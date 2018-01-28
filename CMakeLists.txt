@@ -12,12 +12,11 @@ PROJECT(Tetris-CPP)
 SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_FLAGS "-O3")
 
-INCLUDE_DIRECTORIES(${GLFW_INCLUDE_DIRS})
-
 SET(SOURCES
-	src/graphics.hpp src/TetrisUtils.hpp src/main.cpp
-	src/TetrisClasses.hpp src/TetrisClasses.cpp)
+	src/RenderClasses.hpp src/graphics.hpp src/TetrisUtils.hpp src/main.cpp
+	src/TetrisClasses.hpp src/TetrisClasses.cpp
+	src/RenderClasses.hpp src/RenderClasses.cpp)
 
 
 ADD_EXECUTABLE(tetris ${SOURCES})
-TARGET_LINK_LIBRARIES(tetris GL GLU glut glfw)
+TARGET_LINK_LIBRARIES(tetris sfml-graphics sfml-window sfml-system)

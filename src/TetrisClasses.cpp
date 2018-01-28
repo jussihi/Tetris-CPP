@@ -96,10 +96,10 @@ BlockColor TetrisBlock::getColor() const
  */
 TetrisGrid::TetrisGrid(uint32_t w_rows, uint32_t w_cols) : m_rows(w_rows), m_cols(w_cols), m_currBlockRow(0), m_currBlockCol(0), m_currBlock(tI), m_nextBlock(tI)
 {
-    m_tiles.resize(w_cols);
+    m_tiles.resize(w_rows);
     for(std::vector<BlockColor>& vec : m_tiles)
     {
-        vec.resize(w_rows);
+        vec.resize(w_cols);
     }
 }
 
@@ -118,7 +118,12 @@ void TetrisGrid::clearAll()
 
 void TetrisGrid::setTileColor(const BlockColor& w_color, const uint32_t& w_row, const uint32_t& w_col)
 {
-    m_tiles[w_col][w_row] = w_color;
+    m_tiles[w_row][w_col] = w_color;
+}
+
+BlockColor TetrisGrid::getTileColor(const uint32_t& w_row, const uint32_t& w_col) const
+{
+    return m_tiles[w_row][w_col];
 }
 
 bool TetrisGrid::canBlockFit(const uint32_t& w_row, const uint32_t& w_col, const TetrisBlock& w_block) const
@@ -174,7 +179,6 @@ bool TetrisGrid::isBlockAtBottom() const
 
 bool TetrisGrid::freezeCurrentBlockToGrid() // TODO: return false
 {
-    std::cout << "Piece froze!" << std::endl;
     uint32_t currRow, currCol;
 
     for(uint32_t blockRow = 0; blockRow < m_currBlock.m_body.size(); blockRow++)
@@ -189,6 +193,11 @@ bool TetrisGrid::freezeCurrentBlockToGrid() // TODO: return false
 
     // call some function to check if lines need to be cleared
     return true;
+}
+
+const std::vector<std::vector<BlockColor>>& TetrisGrid::getTiles() const
+{
+    return m_tiles;
 }
 
 
@@ -217,7 +226,6 @@ void TetrisGame::tick()
         // also do it elsewhere too...
         m_tetrisGrid.moveDown();
         m_moveDownTimer = 0.0;
-        std::cout << "moveDown() called" << std::endl;
     }
 
     if(m_tetrisGrid.isBlockAtBottom())

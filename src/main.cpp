@@ -1,5 +1,6 @@
 #include "graphics.hpp"
 #include "TetrisClasses.hpp"
+#include "RenderClasses.hpp"
 #include <iostream>
 
 
@@ -8,92 +9,64 @@ static GameState gameState = sPlay;
 static const double cFPS = 60;
 static const double cDeltaTime = 1 / cFPS;
 
-static const double cTickRate = 1.0 / 120.0;
+static const double cTickRate = 1.0 / 100.0;
 
-void keyCallbackListener(GLFWwindow* w_window, int32_t w_key, int32_t w_scanCode, int32_t w_action, int32_t w_modKeys)
-{
-    if(w_key == GLFW_KEY_ESCAPE && w_action == GLFW_PRESS)
-    {
-        gameState = sQuit;
-    }
-}
 
-void errorCallbackListener(int w_error, const char* w_description)
-{
-    puts(w_description);
-}
-
-GLFWwindow* setupWindow()
-{
-    glfwSetErrorCallback(errorCallbackListener);
-
-    if(!glfwInit())
-    {
-        return nullptr;
-    }
-
-    glfwWindowHint(GLFW_RESIZABLE, (int32_t)false);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, (int32_t)true);
-
-    GLFWwindow* window = glfwCreateWindow(800, 600, "Classic tetris", nullptr, nullptr);
-
-    glfwMakeContextCurrent(window);
-
-    if(!window)
-    {
-        glfwTerminate();
-    }
-
-    return window;
-}
 
 int main(void)
 {
-    GLFWwindow* gameWindow = setupWindow();
-
-    glfwSetErrorCallback(errorCallbackListener);
-
-    if(!gameWindow)
-    {
-        std::cout << "Failed to initialize window. Exiting." << std::endl;
-        return -1;
-    }
-
-    glfwSetKeyCallback(gameWindow, keyCallbackListener);
+    sf::RenderWindow gameWindow(sf::VideoMode(800, 600), "Classic tetris");
 
     // initialize game params here
-    TetrisGrid tetrisGrid(10, 20);
+    TetrisGrid tetrisGrid(20, 10);
     TetrisGame* tetrisGame = new TetrisGame(tetrisGrid, cTickRate);
 
     double lastTick = 0.0;
     double lastRender = 0.0;
-    double currTime = glfwGetTime();
+    double currTime = 0.0;
 
-    while(!glfwWindowShouldClose(gameWindow))
+    sf::Clock tickClock;
+    sf::Clock gfxClock;
+
+    RenderClass renderer(tetrisGrid, gameWindow);
+
+    while(gameWindow.isOpen())
     {
-        // help polling with the while loop.
-        glfwPollEvents();
+        gameWindow.clear();
+       sf::Texture tex;
+       tex.loadFromFile("../textures/blue.png");
+
+       sf::Sprite sprite;
+       sprite.setTexture(tex);
+
+       gameWindow.draw(sprite);
+
+       sprite.setPosition(10, 10);
+
+       gameWindow.display();
+
+        sf::Event event;
+        while(gameWindow.pollEvent(event))
+        {
+
+        }
+
 
         if(gameState == sPlay)
         {
-            currTime = glfwGetTime();
-            if(currTime - lastTick >= cTickRate)
+            if(tickClock.getElapsedTime().asSeconds() >= cTickRate)
             {
-                lastTick = currTime;
+                tickClock.restart();
                 tetrisGame->tick();
             }
 
             // would it be better left this be as it was in the last call?
-            currTime = glfwGetTime();
-            if(currTime - lastRender >= cDeltaTime)
+            if(gfxClock.getElapsedTime().asSeconds() >= cDeltaTime)
             {
-                lastRender = currTime;
-                // render game (update ?)
+                gfxClock.restart();
+                renderer.updateGraphics();
             }
-
+            gameWindow.display();
         }
 
         if(gameState == sQuit)

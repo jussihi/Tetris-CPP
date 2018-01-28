@@ -48,6 +48,13 @@ public:
 
     bool freezeCurrentBlockToGrid();
 
+    const std::vector<std::vector<BlockColor>>& getTiles() const;
+
+    BlockColor getTileColor(const uint32_t& w_row, const uint32_t& w_col) const;
+
+    uint32_t getRows() const { return m_rows; }
+    uint32_t getCols() const { return m_cols; }
+
 private:
 
     bool isOccupied(uint32_t& w_row, uint32_t& w_col) const;

@@ -6,25 +6,25 @@
  */
 
 #include "TetrisClasses.hpp"
+#include "graphics.hpp"
 
 #ifndef RENDERCLASSES_HPP_
 #define RENDERCLASSES_HPP_
 
-class SpriteRenderer {
+class RenderClass {
 public:
-    SpriteRenderer ();
+    RenderClass(TetrisGrid& w_tetrisGrid, sf::RenderWindow& w_gameWindow);
 
     virtual
-    ~SpriteRenderer();
-};
+    ~RenderClass();
 
-class GridRenderer {
-public:
-    GridRenderer ();
-    virtual
-    ~GridRenderer ();
+    void updateGraphics();
 
-    void renderTiles(const TetrisGrid& w_tetrisBoard);
+private:
+    TetrisGrid& m_tetrisGrid;
+    sf::RenderWindow& m_gameWindow;
+    std::vector<sf::Texture> m_tileTextures;
+    std::vector<sf::Sprite> m_tileSprites;
 };
 
 #endif /* RENDERCLASSES_HPP_ */
