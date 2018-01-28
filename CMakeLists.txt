@@ -15,7 +15,8 @@ SET(CMAKE_CXX_FLAGS "-O3")
 INCLUDE_DIRECTORIES(${GLFW_INCLUDE_DIRS})
 
 SET(SOURCES
-	src/graphics.hpp src/main.cpp)
+	src/graphics.hpp src/TetrisUtils.hpp src/main.cpp
+	src/TetrisClasses.hpp src/TetrisClasses.cpp)
 
 
 ADD_EXECUTABLE(tetris ${SOURCES})
