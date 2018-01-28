@@ -65,7 +65,7 @@ int main(void)
     glfwSetKeyCallback(gameWindow, keyCallbackListener);
 
     // initialize game params here
-    TetrisGrid tetrisGrid(7, 13);
+    TetrisGrid tetrisGrid(10, 20);
     TetrisGame* tetrisGame = new TetrisGame(tetrisGrid, cTickRate);
 
     double lastTick = 0.0;
@@ -82,7 +82,6 @@ int main(void)
             currTime = glfwGetTime();
             if(currTime - lastTick >= cTickRate)
             {
-                std::cout << "tick() called from main" << std::endl;
                 lastTick = currTime;
                 tetrisGame->tick();
             }
@@ -92,7 +91,6 @@ int main(void)
             if(currTime - lastRender >= cDeltaTime)
             {
                 lastRender = currTime;
-
                 // render game (update ?)
             }
 

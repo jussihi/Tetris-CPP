@@ -16,7 +16,7 @@ enum GameState {
     sQuit
 };
 
-enum blockType {
+enum BlockType {
     tI = 1,
     tO,
     tT,

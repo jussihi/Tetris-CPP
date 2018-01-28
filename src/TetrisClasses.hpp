@@ -14,12 +14,18 @@
 
 class TetrisBlock {
 public:
-    TetrisBlock(blockType w_type);
+    TetrisBlock(const BlockType w_type);
     ~TetrisBlock();
+
+    const BlockType& getType() const;
 
     std::vector<std::vector<BlockColor>> m_body;
 
+    BlockColor getColor() const;
+
 private:
+    BlockType m_blockType;
+    BlockColor m_blockColor;
 
 };
 
@@ -35,6 +41,12 @@ public:
     bool canBlockFit(const uint32_t& w_row, const uint32_t& w_col, const TetrisBlock& w_block) const;
 
     void moveDown();
+
+    bool spawnBlock();
+
+    bool isBlockAtBottom() const;
+
+    bool freezeCurrentBlockToGrid();
 
 private:
 
@@ -62,6 +74,8 @@ public:
     ~TetrisGame ();
 
     void tick();
+
+    void newBlock();
 
 private:
     TetrisGrid& m_tetrisGrid;

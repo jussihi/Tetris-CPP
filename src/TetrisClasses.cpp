@@ -6,12 +6,12 @@
  */
 
 #include "TetrisClasses.hpp"
-
+#include <iostream>
 
 /*
  *  TETRIS BLOCK CLASS FUNCTION
  */
-TetrisBlock::TetrisBlock(blockType w_type)
+TetrisBlock::TetrisBlock(const BlockType w_type) : m_blockType(w_type), m_blockColor(cBlue)
 {
     // ugly hard coded way to
     // store the block body
@@ -81,6 +81,16 @@ TetrisBlock::~TetrisBlock()
 
 }
 
+const BlockType& TetrisBlock::getType() const
+{
+    return m_blockType;
+}
+
+BlockColor TetrisBlock::getColor() const
+{
+    return m_blockColor;
+}
+
 /*
  *  TETRIS PLAYGRID CLASS FUNCTIONS
  */
@@ -144,6 +154,41 @@ void TetrisGrid::moveDown()
     {
         m_currBlockRow++;
     }
+
+}
+
+bool TetrisGrid::spawnBlock()
+{
+    m_currBlock = TetrisBlock(m_nextBlock.getType());
+
+    m_currBlockRow = 0; // TODO: change this to negative value
+    m_currBlockCol = (m_cols - m_currBlock.m_body[0].size()) / 2;
+
+    return true;        // TODO : Add check if not possible to add
+}
+
+bool TetrisGrid::isBlockAtBottom() const
+{
+    return !canBlockFit(m_currBlockRow + 1, m_currBlockCol, m_currBlock);
+}
+
+bool TetrisGrid::freezeCurrentBlockToGrid() // TODO: return false
+{
+    std::cout << "Piece froze!" << std::endl;
+    uint32_t currRow, currCol;
+
+    for(uint32_t blockRow = 0; blockRow < m_currBlock.m_body.size(); blockRow++)
+    {
+        for(uint32_t blockCol = 0; blockCol < m_currBlock.m_body[0].size(); blockCol++)
+        {
+            currRow = m_currBlockRow + blockRow;
+            currCol = m_currBlockCol + blockCol;
+            setTileColor( m_currBlock.getColor(), currRow, currCol);
+        }
+    }
+
+    // call some function to check if lines need to be cleared
+    return true;
 }
 
 
@@ -172,6 +217,18 @@ void TetrisGame::tick()
         // also do it elsewhere too...
         m_tetrisGrid.moveDown();
         m_moveDownTimer = 0.0;
+        std::cout << "moveDown() called" << std::endl;
+    }
+
+    if(m_tetrisGrid.isBlockAtBottom())
+    {
+        // TODO: joku odotusaika tähän
+        // if(odotusaika..)
+        m_tetrisGrid.freezeCurrentBlockToGrid();
     }
 }
 
+void TetrisGame::newBlock()
+{
+    m_tetrisGrid.spawnBlock();
+}
