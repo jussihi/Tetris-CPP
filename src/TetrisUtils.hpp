@@ -38,4 +38,5 @@ enum BlockColor {
 
 
 
+
 #endif /* TETRISUTILS_HPP_ */

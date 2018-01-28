@@ -3,7 +3,12 @@
 #include <iostream>
 
 
-static GameState gameState = sStop;
+static GameState gameState = sPlay;
+
+static const double cFPS = 60;
+static const double cDeltaTime = 1 / cFPS;
+
+static const double cTickRate = 1.0 / 120.0;
 
 void keyCallbackListener(GLFWwindow* w_window, int32_t w_key, int32_t w_scanCode, int32_t w_action, int32_t w_modKeys)
 {
@@ -20,7 +25,7 @@ void errorCallbackListener(int w_error, const char* w_description)
 
 GLFWwindow* setupWindow()
 {
-        glfwSetErrorCallback(errorCallbackListener);
+    glfwSetErrorCallback(errorCallbackListener);
 
     if(!glfwInit())
     {
@@ -40,7 +45,6 @@ GLFWwindow* setupWindow()
     if(!window)
     {
         glfwTerminate();
-        return nullptr;
     }
 
     return window;
@@ -61,11 +65,38 @@ int main(void)
     glfwSetKeyCallback(gameWindow, keyCallbackListener);
 
     // initialize game params here
-    TetrisGame* tetrisGame = new TetrisGame();
+    TetrisGrid tetrisGrid(7, 13);
+    TetrisGame* tetrisGame = new TetrisGame(tetrisGrid, cTickRate);
 
+    double lastTick = 0.0;
+    double lastRender = 0.0;
+    double currTime = glfwGetTime();
 
     while(!glfwWindowShouldClose(gameWindow))
     {
+        // help polling with the while loop.
+        glfwPollEvents();
+
+        if(gameState == sPlay)
+        {
+            currTime = glfwGetTime();
+            if(currTime - lastTick >= cTickRate)
+            {
+                lastTick = currTime;
+                tetrisGame->tick();
+            }
+
+            // would it be better left this be as it was in the last call?
+            currTime = glfwGetTime();
+            if(currTime - lastRender >= cDeltaTime)
+            {
+                lastRender = currTime;
+
+                // render game (update ?)
+            }
+
+        }
+
         if(gameState == sQuit)
         {
             break;
