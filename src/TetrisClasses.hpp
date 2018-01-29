@@ -19,14 +19,21 @@ public:
 
     const BlockType& getType() const;
 
-    std::vector<std::vector<BlockColor>> m_body;
-
     BlockColor getColor() const;
 
+    BlockBody getBody() const { return m_body[m_currRotation]; }
+
+    uint8_t g_maxRotations;
+
+    const uint8_t getRotation() const { return m_currRotation; }
+
+    void setRotation(uint8_t w_rotation) { m_currRotation = w_rotation; }
+
 private:
+    std::vector<BlockBody> m_body;
     BlockType m_blockType;
     BlockColor m_blockColor;
-
+    uint8_t m_currRotation;
 };
 
 class TetrisGrid {
@@ -55,6 +62,14 @@ public:
     uint32_t getRows() const { return m_rows; }
     uint32_t getCols() const { return m_cols; }
 
+    TetrisBlock getCurrBlock() const { return m_currBlock; };
+
+    uint32_t getCurrBlockRow() { return m_currBlockRow; };
+    uint32_t getCurrBlockCol() { return m_currBlockCol; };
+
+    void tryMoveRotateCurrentBlock(const int32_t& w_movementHorizontal, const int32_t& w_rotation);
+
+
 private:
 
     bool isOccupied(uint32_t& w_row, uint32_t& w_col) const;
@@ -80,7 +95,7 @@ public:
     virtual
     ~TetrisGame ();
 
-    void tick();
+    void tick(const int32_t& w_movementHorizontal, const int32_t& w_rotation);
 
     void newBlock();
 

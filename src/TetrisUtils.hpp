@@ -8,6 +8,10 @@
 #ifndef TETRISUTILS_HPP_
 #define TETRISUTILS_HPP_
 
+#include <vector>
+
+
+
 enum GameState {
     sStop = 0,  // ?? turhaa?
     sPlay,
@@ -36,7 +40,6 @@ enum BlockColor {
     cPink
 };
 
-
-
+typedef std::vector<std::vector<bool>> BlockBody;
 
 #endif /* TETRISUTILS_HPP_ */

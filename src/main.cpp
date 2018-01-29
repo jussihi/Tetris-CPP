@@ -30,25 +30,66 @@ int main(void)
 
     RenderClass renderer(tetrisGrid, gameWindow);
 
+    int32_t movementHorizontal = 0;
+    int32_t rotation = 0;
+
     while(gameWindow.isOpen())
     {
-        gameWindow.clear();
-       sf::Texture tex;
-       tex.loadFromFile("../textures/blue.png");
+        /*
+        sf::Texture tex;
+        tex.loadFromFile("../textures/blue.png");
+        sf::Sprite sprite;
+        sprite.setTexture(tex);
+        sprite.setPosition(10, 10);
+        gameWindow.draw(sprite);
 
-       sf::Sprite sprite;
-       sprite.setTexture(tex);
+        sf::Texture texRed;
+        texRed.loadFromFile("../textures/red.png");
+        sf::Sprite spriteRed;
+        spriteRed.setTexture(texRed);
+        spriteRed.setPosition(10, 100);
+        gameWindow.draw(spriteRed);
 
-       gameWindow.draw(sprite);
-
-       sprite.setPosition(10, 10);
-
-       gameWindow.display();
+        sf::Texture texGr;
+        texGr.loadFromFile("../textures/green.png");
+        sf::Sprite spriteGr;
+        spriteGr.setTexture(texGr);
+        spriteGr.setPosition(100, 10);
+        gameWindow.draw(spriteGr);
+        */
 
         sf::Event event;
         while(gameWindow.pollEvent(event))
         {
-
+            switch(event.type)
+            {
+                case sf::Event::KeyPressed:
+                {
+                    std::cout << "Key pressed" << std::endl;
+                    switch(event.key.code)
+                    {
+                        case sf::Keyboard::Left:
+                            movementHorizontal--;
+                            std::cout << "it was left" << std::endl;
+                            break;
+                        case sf::Keyboard::Right:
+                            movementHorizontal++;
+                            break;
+                        case sf::Keyboard::A:
+                            rotation--;
+                            break;
+                        case sf::Keyboard::X:
+                            rotation++;
+                            break;
+                    }
+                    break;
+                }
+                case sf::Event::Closed:
+                    gameState = sQuit;
+                    break;
+                default:
+                    break;
+            }
         }
 
 
@@ -57,7 +98,9 @@ int main(void)
             if(tickClock.getElapsedTime().asSeconds() >= cTickRate)
             {
                 tickClock.restart();
-                tetrisGame->tick();
+                tetrisGame->tick(movementHorizontal, rotation);
+                movementHorizontal = 0;
+                rotation = 0;
             }
 
             // would it be better left this be as it was in the last call?
@@ -66,7 +109,6 @@ int main(void)
                 gfxClock.restart();
                 renderer.updateGraphics();
             }
-            gameWindow.display();
         }
 
         if(gameState == sQuit)
