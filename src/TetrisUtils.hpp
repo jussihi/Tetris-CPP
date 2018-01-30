@@ -21,7 +21,8 @@ enum GameState {
 };
 
 enum BlockType {
-    tI = 1,
+    tE = 0,
+    tI,
     tO,
     tT,
     tS,

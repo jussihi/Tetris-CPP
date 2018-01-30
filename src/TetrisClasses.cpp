@@ -162,7 +162,11 @@ void TetrisGrid::moveDown()
 bool TetrisGrid::spawnBlock()
 {
     m_currBlock = TetrisBlock(m_nextBlock.getType());
-    m_nextBlock = TetrisBlock(static_cast<BlockType>(rand()%6 + 1));
+    m_nextBlock = TetrisBlock(static_cast<BlockType>(rand() % 8));
+    if(m_nextBlock.getType() == m_currBlock.getType() || m_nextBlock.getType() == tE)
+    {
+        m_nextBlock = TetrisBlock(static_cast<BlockType>(rand() % 7 + 1));
+    }
 
     m_currBlockRow = 0; // TODO: change this to negative value
 
