@@ -9,9 +9,13 @@
 #include "TetrisUtils.hpp"
 #include <vector>
 #include <iostream>
+#include <string>
+#include <sstream>
+
+#define FONTSIZE 32
 
 
-RenderClass::RenderClass(TetrisGrid& w_tetrisGrid, sf::RenderWindow& w_gameWindow) : m_tetrisGrid(w_tetrisGrid), m_gameWindow(w_gameWindow)
+RenderClass::RenderClass(TetrisGrid& w_tetrisGrid, sf::RenderWindow& w_gameWindow, const uint32_t& w_offsetX, const uint32_t& w_offsetY, const bool& multiPlayer) : m_tetrisGrid(w_tetrisGrid), m_gameWindow(w_gameWindow), m_offsetX(w_offsetX), m_offsetY(w_offsetY)
 {
     m_tileTextures.resize(7);
     m_tileTextures[1].loadFromFile("../textures/blue.png");
@@ -20,6 +24,50 @@ RenderClass::RenderClass(TetrisGrid& w_tetrisGrid, sf::RenderWindow& w_gameWindo
     m_tileTextures[4].loadFromFile("../textures/cyan.png");
     m_tileTextures[5].loadFromFile("../textures/green.png");
     m_tileTextures[6].loadFromFile("../textures/pink.png");
+
+    m_font.loadFromFile("../textures/NESFont.ttf");
+
+    m_texBG.loadFromFile("../textures/tetrisBG.png");
+
+    m_spriteBG = sf::Sprite(m_texBG);
+
+    std::stringstream ss;
+
+    // text boxes
+    // MAKE SINGLE PLAYER VARIANTS
+
+    ss << " TOP\n10000\n\n SCORE\n " << m_tetrisGrid.getScore();
+    m_score.setFont(m_font);
+    m_score.setString(ss.str());
+    m_score.setCharacterSize(FONTSIZE - 2);
+    m_score.setPosition(sf::Vector2f(m_offsetX + 375, m_offsetY -  80 ));
+
+    ss.clear();
+    ss.str(std::string());
+
+    ss << "LINES-000"; // << 000;
+    m_lines.setFont(m_font);
+    m_lines.setString(ss.str());
+    m_lines.setCharacterSize(FONTSIZE);
+    m_lines.setPosition(sf::Vector2f(m_offsetX + 36, m_offsetY - 100 ));
+
+    ss.clear();
+    ss.str(std::string());
+
+    ss << "NEXT";
+    m_nextText.setFont(m_font);
+    m_nextText.setString(ss.str());
+    m_nextText.setCharacterSize(FONTSIZE);
+    m_nextText.setPosition(sf::Vector2f(m_offsetX + 385, m_offsetY + 221 ));
+
+    ss.clear();
+    ss.str(std::string());
+
+    ss << "LEVEL\n  00";
+    m_level.setFont(m_font);
+    m_level.setString(ss.str());
+    m_level.setCharacterSize(FONTSIZE);
+    m_level.setPosition(sf::Vector2f(m_offsetX + 385, m_offsetY + 440 ));
 }
 
 
@@ -43,7 +91,7 @@ void RenderClass::updateGraphics()
                 i++;
                 sf::Sprite sprite;
                 sprite.setTexture(m_tileTextures[currColor]);
-                sprite.setPosition(sf::Vector2f(24 * col, 24 * row));
+                sprite.setPosition(sf::Vector2f(m_offsetX + 32 * col, m_offsetY +  32 * row));
                 m_tileSprites.push_back(sprite);
             }
         }
@@ -61,14 +109,30 @@ void RenderClass::updateGraphics()
                 i++;
                 sf::Sprite sprite;
                 sprite.setTexture(m_tileTextures[currColor]);
-                sprite.setPosition(sf::Vector2f(24.0 * (blockCol + m_tetrisGrid.getCurrBlockCol()), 24.0 * (blockRow + m_tetrisGrid.getCurrBlockRow())));
+                sprite.setPosition(sf::Vector2f(m_offsetX + 32 * (blockCol + m_tetrisGrid.getCurrBlockCol()), m_offsetY +  32 * (blockRow + m_tetrisGrid.getCurrBlockRow())));
                 m_tileSprites.push_back(sprite);
             }
         }
     }
 
+    /*
+    // text boxes
+    sf::Text score;
+    score.setFont(m_font);
+    std::stringstream a;
+    a << " SCORE\n" << m_tetrisGrid.getScore();
+    score.setString(a.str());
+    score.setCharacterSize(30);
+    score.setPosition(sf::Vector2f(m_offsetX + 390, m_offsetY +  32 ));
+*/
+
     // update screen
     m_gameWindow.clear();
+    m_gameWindow.draw(m_spriteBG);
+    m_gameWindow.draw(m_score);
+    m_gameWindow.draw(m_lines);
+    m_gameWindow.draw(m_nextText);
+    m_gameWindow.draw(m_level);
     for(auto it = m_tileSprites.begin(); it != m_tileSprites.end(); it++)
     {
         m_gameWindow.draw(*it);

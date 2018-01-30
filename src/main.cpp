@@ -15,7 +15,7 @@ static const double cTickRate = 1.0 / 100.0;
 
 int main(void)
 {
-    sf::RenderWindow gameWindow(sf::VideoMode(800, 600), "Classic tetris");
+    sf::RenderWindow gameWindow(sf::VideoMode(1410, 960), "Classic tetris");
 
     // initialize game params here
     TetrisGrid tetrisGrid(20, 10);
@@ -28,36 +28,16 @@ int main(void)
     sf::Clock tickClock;
     sf::Clock gfxClock;
 
-    RenderClass renderer(tetrisGrid, gameWindow);
+    uint32_t offsetX = 33;
+    uint32_t offsetY = 194;
+
+    RenderClass renderer1(tetrisGrid, gameWindow, offsetX, offsetY, true);
 
     int32_t movementHorizontal = 0;
     int32_t rotation = 0;
 
     while(gameWindow.isOpen())
     {
-        /*
-        sf::Texture tex;
-        tex.loadFromFile("../textures/blue.png");
-        sf::Sprite sprite;
-        sprite.setTexture(tex);
-        sprite.setPosition(10, 10);
-        gameWindow.draw(sprite);
-
-        sf::Texture texRed;
-        texRed.loadFromFile("../textures/red.png");
-        sf::Sprite spriteRed;
-        spriteRed.setTexture(texRed);
-        spriteRed.setPosition(10, 100);
-        gameWindow.draw(spriteRed);
-
-        sf::Texture texGr;
-        texGr.loadFromFile("../textures/green.png");
-        sf::Sprite spriteGr;
-        spriteGr.setTexture(texGr);
-        spriteGr.setPosition(100, 10);
-        gameWindow.draw(spriteGr);
-        */
-
         sf::Event event;
         while(gameWindow.pollEvent(event))
         {
@@ -107,7 +87,7 @@ int main(void)
             if(gfxClock.getElapsedTime().asSeconds() >= cDeltaTime)
             {
                 gfxClock.restart();
-                renderer.updateGraphics();
+                renderer1.updateGraphics();
             }
         }
 

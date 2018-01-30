@@ -10,7 +10,7 @@ PROJECT(Tetris-CPP)
 
 # Set compiler and linker flags
 SET(CMAKE_CXX_STANDARD 11)
-SET(CMAKE_CXX_FLAGS "-O3")
+SET(CMAKE_CXX_FLAGS "-g")
 
 SET(SOURCES
 	src/RenderClasses.hpp src/graphics.hpp src/TetrisUtils.hpp src/main.cpp

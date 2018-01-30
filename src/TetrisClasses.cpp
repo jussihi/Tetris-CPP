@@ -83,7 +83,7 @@ BlockColor TetrisBlock::getColor() const
 /*
  *  TETRIS PLAYGRID CLASS FUNCTIONS
  */
-TetrisGrid::TetrisGrid(uint32_t w_rows, uint32_t w_cols) : m_rows(w_rows), m_cols(w_cols), m_currBlockRow(0), m_currBlockCol(0), m_currBlock(tI), m_nextBlock(tI)
+TetrisGrid::TetrisGrid(uint32_t w_rows, uint32_t w_cols) : m_rows(w_rows), m_cols(w_cols), m_currBlockRow(0), m_currBlockCol(0), m_currBlock(tI), m_nextBlock(tI), m_score(0), m_level(1)
 {
     m_tiles.resize(w_cols);
     for(std::vector<BlockColor>& vec : m_tiles)
@@ -280,6 +280,49 @@ void TetrisGrid::tryMoveRotateCurrentBlock(const int32_t& w_movementHorizontal, 
     }
 }
 
+void TetrisGrid::removeFullRows()
+{
+    uint8_t rowsRemoved = 0;
+
+    for(uint32_t row = 0; row < m_rows; row++)
+    {
+        for(uint32_t col = 0; col < m_cols; col++)
+        {
+            if(m_tiles[col][row] == cEmpty)
+                break;
+
+            if(col == m_cols -1)
+            {
+                rowsRemoved++;
+                for(uint32_t col = 0; col < m_cols; col++)
+                {
+                    m_tiles[col].erase(m_tiles[col].begin() + row);
+                    m_tiles[col].insert(m_tiles[col].begin(), cEmpty);
+                }
+            }
+        }
+    }
+    // calculate score
+    // tetris.wikia.com/wiki/Scoring
+    // store amount of soft drops somewhere!
+    switch (rowsRemoved)
+    {
+        case 1:
+            m_score += 40 * (m_level + 1);
+            break;
+        case 2:
+            m_score += 100 * (m_level + 1);
+            break;
+        case 3:
+            m_score += 300 * (m_level + 1);
+            break;
+        case 4:
+            m_score += 1200 * (m_level + 1);
+            break;
+    }
+
+}
+
 
 /*
  *  GAME PLACEHOLDER CLASS FUNCTIONS
@@ -305,7 +348,16 @@ void TetrisGame::tick(const int32_t& w_movementHorizontal, const int32_t& w_rota
         m_tetrisGrid.tryMoveRotateCurrentBlock(w_movementHorizontal, w_rotation);
     }
 
-    if(m_moveDownTimer >= m_moveDownDelta)
+    if(m_tetrisGrid.isBlockAtBottom())
+    {
+        if(m_moveDownTimer >= m_moveDownDelta)
+        {
+            m_tetrisGrid.freezeCurrentBlockToGrid();
+            m_tetrisGrid.removeFullRows();
+            m_moveDownTimer = 0.0;
+        }
+    }
+    else if(m_moveDownTimer >= m_moveDownDelta)
     {
         // TODO: do correction of the overflow time
         // also do it elsewhere too...
@@ -313,12 +365,7 @@ void TetrisGame::tick(const int32_t& w_movementHorizontal, const int32_t& w_rota
         m_moveDownTimer = 0.0;
     }
 
-    if(m_tetrisGrid.isBlockAtBottom())
-    {
-        // TODO: joku odotusaika tähän
-        // if(odotusaika..)
-        m_tetrisGrid.freezeCurrentBlockToGrid();
-    }
+
 }
 
 void TetrisGame::newBlock()

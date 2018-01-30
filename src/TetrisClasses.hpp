@@ -62,12 +62,16 @@ public:
     uint32_t getRows() const { return m_rows; }
     uint32_t getCols() const { return m_cols; }
 
-    TetrisBlock getCurrBlock() const { return m_currBlock; };
+    TetrisBlock getCurrBlock() const { return m_currBlock; }
 
-    uint32_t getCurrBlockRow() { return m_currBlockRow; };
-    uint32_t getCurrBlockCol() { return m_currBlockCol; };
+    uint32_t getCurrBlockRow() { return m_currBlockRow; }
+    uint32_t getCurrBlockCol() { return m_currBlockCol; }
 
     void tryMoveRotateCurrentBlock(const int32_t& w_movementHorizontal, const int32_t& w_rotation);
+
+    void removeFullRows();
+
+    uint32_t getScore() const { return m_score;}
 
 
 private:
@@ -86,6 +90,9 @@ private:
 
     TetrisBlock m_currBlock;
     TetrisBlock m_nextBlock;
+
+    uint32_t m_score;
+    uint32_t m_level;
 };
 
 
