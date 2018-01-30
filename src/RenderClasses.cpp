@@ -11,6 +11,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <iomanip>
 
 #define FONTSIZE 32
 
@@ -63,7 +64,7 @@ RenderClass::RenderClass(TetrisGrid& w_tetrisGrid, sf::RenderWindow& w_gameWindo
     ss.clear();
     ss.str(std::string());
 
-    ss << "LEVEL\n  00";
+    ss << "LEVEL\n  " << std::setfill('0') << std::setw(2) << w_tetrisGrid.getLevel();
     m_level.setFont(m_font);
     m_level.setString(ss.str());
     m_level.setCharacterSize(FONTSIZE);
@@ -80,7 +81,6 @@ void RenderClass::updateGraphics()
 {
     m_tileSprites.clear();
 
-    int i = 0;
     for(uint32_t col = 0; col < m_tetrisGrid.getCols(); col++)
     {
         for(uint32_t row = 0; row < m_tetrisGrid.getRows(); row++)
@@ -88,7 +88,6 @@ void RenderClass::updateGraphics()
             BlockColor currColor = m_tetrisGrid.getTileColor(row, col);
             if(currColor != cEmpty)
             {
-                i++;
                 sf::Sprite sprite;
                 sprite.setTexture(m_tileTextures[currColor]);
                 sprite.setPosition(sf::Vector2f(m_offsetX + 32 * col, m_offsetY +  32 * row));
@@ -106,7 +105,6 @@ void RenderClass::updateGraphics()
         {
             if(currBody[blockCol][blockRow] != cEmpty)
             {
-                i++;
                 sf::Sprite sprite;
                 sprite.setTexture(m_tileTextures[currColor]);
                 sprite.setPosition(sf::Vector2f(m_offsetX + 32 * (blockCol + m_tetrisGrid.getCurrBlockCol()), m_offsetY +  32 * (blockRow + m_tetrisGrid.getCurrBlockRow())));
@@ -115,16 +113,24 @@ void RenderClass::updateGraphics()
         }
     }
 
-    /*
     // text boxes
-    sf::Text score;
-    score.setFont(m_font);
-    std::stringstream a;
-    a << " SCORE\n" << m_tetrisGrid.getScore();
-    score.setString(a.str());
-    score.setCharacterSize(30);
-    score.setPosition(sf::Vector2f(m_offsetX + 390, m_offsetY +  32 ));
-*/
+
+    std::stringstream ss;
+
+    ss << " TOP\n " << std::setfill('0') << std::setw(6) << "10000" << "\n\n SCORE\n " << std::setfill('0') << std::setw(6) <<  m_tetrisGrid.getScore();
+    m_score.setString(ss.str());
+
+    ss.clear();
+    ss.str(std::string());
+
+    ss << "LINES-" << std::setfill('0') << std::setw(3) << m_tetrisGrid.getClearedRows();
+    m_lines.setString(ss.str());
+
+    ss.clear();
+    ss.str(std::string());
+
+    ss << "LEVEL\n  " << std::setfill('0') << std::setw(2) << m_tetrisGrid.getLevel();
+    m_level.setString(ss.str());
 
     // update screen
     m_gameWindow.clear();

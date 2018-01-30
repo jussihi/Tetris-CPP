@@ -8,6 +8,7 @@
 #include "TetrisClasses.hpp"
 #include "BlockRotations.hpp"
 #include <iostream>
+#include <algorithm>
 
 /*
  *  TETRIS BLOCK CLASS FUNCTION
@@ -83,13 +84,19 @@ BlockColor TetrisBlock::getColor() const
 /*
  *  TETRIS PLAYGRID CLASS FUNCTIONS
  */
-TetrisGrid::TetrisGrid(uint32_t w_rows, uint32_t w_cols) : m_rows(w_rows), m_cols(w_cols), m_currBlockRow(0), m_currBlockCol(0), m_currBlock(tI), m_nextBlock(tI), m_score(0), m_level(1)
+TetrisGrid::TetrisGrid(uint32_t w_rows, uint32_t w_cols) : m_rows(w_rows), m_cols(w_cols), m_currBlockRow(0), m_currBlockCol(0), m_currBlock(tI), m_nextBlock(tI), m_score(0), m_level(0), m_startLevel(0), m_rowsCleared(0), m_levelRowsCleared(0), m_moveDownTick(0)
 {
     m_tiles.resize(w_cols);
     for(std::vector<BlockColor>& vec : m_tiles)
     {
         vec.resize(w_rows);
     }
+
+    // fill levels with their framerate:
+    // https://tetris.wiki/Tetris_(NES,_Nintendo)
+    m_levelG = {48, 43, 38, 33, 28, 23, 18, 13, 8, 6, 5, 5, 5, 4, 4, 4, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1};
+
+    spawnBlock();
 }
 
 TetrisGrid::~TetrisGrid()
@@ -291,13 +298,13 @@ void TetrisGrid::removeFullRows()
             if(m_tiles[col][row] == cEmpty)
                 break;
 
-            if(col == m_cols -1)
+            if(col == m_cols -1 && m_tiles[col][row] != cEmpty)
             {
                 rowsRemoved++;
-                for(uint32_t col = 0; col < m_cols; col++)
+                for(uint32_t colRem = 0; colRem < m_cols; colRem++)
                 {
-                    m_tiles[col].erase(m_tiles[col].begin() + row);
-                    m_tiles[col].insert(m_tiles[col].begin(), cEmpty);
+                    m_tiles[colRem].erase(m_tiles[colRem].begin() + row);
+                    m_tiles[colRem].insert(m_tiles[colRem].begin(), cEmpty);
                 }
             }
         }
@@ -321,6 +328,56 @@ void TetrisGrid::removeFullRows()
             break;
     }
 
+    m_rowsCleared += rowsRemoved;
+
+    if(rowsRemoved)
+    {
+        m_levelRowsCleared += rowsRemoved;
+        checkLevelAdvance();
+    }
+}
+
+void TetrisGrid::checkLevelAdvance()
+{
+    if(m_level == m_startLevel)
+    {
+        uint32_t max = m_startLevel * 10 - 50;
+        if(m_levelRowsCleared >= (m_startLevel * 10 + 10) || m_levelRowsCleared >= std::max((uint32_t)100, max))
+        {
+            m_levelRowsCleared = m_levelRowsCleared % 10;
+            m_level++;
+        }
+    }
+    else
+    {
+        if(m_levelRowsCleared >= 10)
+        {
+            m_levelRowsCleared = m_levelRowsCleared % 10;
+            m_level++;
+        }
+    }
+}
+
+void TetrisGrid::tickGrid()
+{
+    m_moveDownTick++;
+
+    if(isBlockAtBottom())
+    {
+        if(m_moveDownTick >= m_levelG[m_level])
+        {
+            freezeCurrentBlockToGrid();
+            removeFullRows();
+            m_moveDownTick = 0;
+        }
+    }
+    else if(m_moveDownTick >= m_levelG[m_level])
+    {
+        // TODO: do correction of the overflow time
+        // also do it elsewhere too...
+        moveDown();
+        m_moveDownTick = 0;
+    }
 }
 
 
@@ -341,31 +398,12 @@ TetrisGame::~TetrisGame ()
 // ( one tick every 1 / FPS second)
 void TetrisGame::tick(const int32_t& w_movementHorizontal, const int32_t& w_rotation)
 {
-    m_moveDownTimer += m_tickDelta;
-
     if(w_movementHorizontal || w_rotation)
     {
         m_tetrisGrid.tryMoveRotateCurrentBlock(w_movementHorizontal, w_rotation);
     }
 
-    if(m_tetrisGrid.isBlockAtBottom())
-    {
-        if(m_moveDownTimer >= m_moveDownDelta)
-        {
-            m_tetrisGrid.freezeCurrentBlockToGrid();
-            m_tetrisGrid.removeFullRows();
-            m_moveDownTimer = 0.0;
-        }
-    }
-    else if(m_moveDownTimer >= m_moveDownDelta)
-    {
-        // TODO: do correction of the overflow time
-        // also do it elsewhere too...
-        m_tetrisGrid.moveDown();
-        m_moveDownTimer = 0.0;
-    }
-
-
+    m_tetrisGrid.tickGrid();
 }
 
 void TetrisGame::newBlock()

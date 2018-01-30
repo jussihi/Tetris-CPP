@@ -71,7 +71,15 @@ public:
 
     void removeFullRows();
 
-    uint32_t getScore() const { return m_score;}
+    void checkLevelAdvance();
+
+    uint32_t getScore() const { return m_score; }
+
+    uint32_t getLevel() const { return m_level; }
+
+    void tickGrid();
+
+    uint32_t getClearedRows() const { return m_rowsCleared; }
 
 
 private:
@@ -93,6 +101,13 @@ private:
 
     uint32_t m_score;
     uint32_t m_level;
+    uint32_t m_startLevel;
+    uint32_t m_rowsCleared;
+    uint32_t m_levelRowsCleared;
+
+    std::vector<uint32_t> m_levelG;
+
+    uint32_t m_moveDownTick;
 };
 
 

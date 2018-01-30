@@ -19,14 +19,14 @@ int main(void)
 
     // initialize game params here
     TetrisGrid tetrisGrid(20, 10);
-    TetrisGame* tetrisGame = new TetrisGame(tetrisGrid, cTickRate);
+    TetrisGame* tetrisGame = new TetrisGame(tetrisGrid, cDeltaTime);
 
     double lastTick = 0.0;
     double lastRender = 0.0;
     double currTime = 0.0;
 
     sf::Clock tickClock;
-    sf::Clock gfxClock;
+    //sf::Clock gfxClock;
 
     uint32_t offsetX = 33;
     uint32_t offsetY = 194;
@@ -45,12 +45,10 @@ int main(void)
             {
                 case sf::Event::KeyPressed:
                 {
-                    std::cout << "Key pressed" << std::endl;
                     switch(event.key.code)
                     {
                         case sf::Keyboard::Left:
                             movementHorizontal--;
-                            std::cout << "it was left" << std::endl;
                             break;
                         case sf::Keyboard::Right:
                             movementHorizontal++;
@@ -75,20 +73,22 @@ int main(void)
 
         if(gameState == sPlay)
         {
-            if(tickClock.getElapsedTime().asSeconds() >= cTickRate)
+            if(tickClock.getElapsedTime().asSeconds() >= cDeltaTime)
             {
                 tickClock.restart();
                 tetrisGame->tick(movementHorizontal, rotation);
+                renderer1.updateGraphics();
                 movementHorizontal = 0;
                 rotation = 0;
             }
-
+               /*
             // would it be better left this be as it was in the last call?
             if(gfxClock.getElapsedTime().asSeconds() >= cDeltaTime)
             {
                 gfxClock.restart();
-                renderer1.updateGraphics();
+
             }
+            */
         }
 
         if(gameState == sQuit)
