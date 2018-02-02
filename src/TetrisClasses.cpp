@@ -161,6 +161,8 @@ void TetrisGrid::moveDown()
 
 bool TetrisGrid::spawnBlock()
 {
+    // NES styled block spawn randomization, more info at
+    // https://tetris.wiki/Tetris_(NES,_Nintendo)
     m_currBlock = TetrisBlock(m_nextBlock.getType());
     m_nextBlock = TetrisBlock(static_cast<BlockType>(rand() % 8));
     if(m_nextBlock.getType() == m_currBlock.getType() || m_nextBlock.getType() == tE)
@@ -168,7 +170,22 @@ bool TetrisGrid::spawnBlock()
         m_nextBlock = TetrisBlock(static_cast<BlockType>(rand() % 7 + 1));
     }
 
-    m_currBlockRow = 0; // TODO: change this to negative value
+    switch (m_currBlock.getType())
+    {
+        case tI:
+            m_currBlockRow = -2;
+            break;
+        case tJ:
+        case tL:
+        case tT:
+        case tS:
+        case tZ:
+            m_currBlockRow = -1;
+            break;
+        default:
+            m_currBlockRow = 0;
+            break;
+    }
 
     m_currBlockCol = (m_cols - m_currBlock.getBody().size()) / 2;
 
@@ -362,7 +379,7 @@ void TetrisGrid::checkLevelAdvance()
     }
 }
 
-void TetrisGrid::tickGrid()
+void TetrisGrid::tickGrid(const bool& w_softDrop)
 {
     m_moveDownTick++;
 
@@ -374,6 +391,11 @@ void TetrisGrid::tickGrid()
             removeFullRows();
             m_moveDownTick = 0;
         }
+    }
+    else if(w_softDrop && m_moveDownTick >= (m_levelG[m_level] / 2))
+    {
+        moveDown();
+        m_moveDownTick = 0;
     }
     else if(m_moveDownTick >= m_levelG[m_level])
     {
@@ -400,14 +422,14 @@ TetrisGame::~TetrisGame ()
 
 // process one tick in game time
 // ( one tick every 1 / FPS second)
-void TetrisGame::tick(const int32_t& w_movementHorizontal, const int32_t& w_rotation)
+void TetrisGame::tick(const int32_t& w_movementHorizontal, const int32_t& w_rotation, const bool& w_softDrop)
 {
     if(w_movementHorizontal || w_rotation)
     {
         m_tetrisGrid.tryMoveRotateCurrentBlock(w_movementHorizontal, w_rotation);
     }
 
-    m_tetrisGrid.tickGrid();
+    m_tetrisGrid.tickGrid(w_softDrop);
 }
 
 void TetrisGame::newBlock()

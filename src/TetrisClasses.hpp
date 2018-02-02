@@ -77,7 +77,7 @@ public:
 
     uint32_t getLevel() const { return m_level; }
 
-    void tickGrid();
+    void tickGrid(const bool& w_softDrop);
 
     uint32_t getClearedRows() const { return m_rowsCleared; }
 
@@ -93,7 +93,7 @@ private:
 
     std::vector<std::vector<BlockColor>> m_tiles;
 
-    uint32_t m_currBlockRow;
+    int32_t m_currBlockRow;
     uint32_t m_currBlockCol;
 
     TetrisBlock m_currBlock;
@@ -117,7 +117,7 @@ public:
     virtual
     ~TetrisGame ();
 
-    void tick(const int32_t& w_movementHorizontal, const int32_t& w_rotation);
+    void tick(const int32_t& w_movementHorizontal, const int32_t& w_rotation, const bool& w_softDrop);
 
     void newBlock();
 

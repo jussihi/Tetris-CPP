@@ -36,9 +36,12 @@ int main(void)
     int32_t movementHorizontal = 0;
     int32_t rotation = 0;
 
+    bool softDrop = false;
+
     while(gameWindow.isOpen())
     {
         sf::Event event;
+        bool setSoft = false;
         while(gameWindow.pollEvent(event))
         {
             switch(event.type)
@@ -59,6 +62,9 @@ int main(void)
                         case sf::Keyboard::X:
                             rotation++;
                             break;
+                        case sf::Keyboard::Down:
+                            setSoft = true;
+                            break;
                     }
                     break;
                 }
@@ -68,6 +74,7 @@ int main(void)
                 default:
                     break;
             }
+            softDrop = setSoft;
         }
 
 
@@ -76,7 +83,7 @@ int main(void)
             if(tickClock.getElapsedTime().asSeconds() >= cDeltaTime)
             {
                 tickClock.restart();
-                tetrisGame->tick(movementHorizontal, rotation);
+                tetrisGame->tick(movementHorizontal, rotation, softDrop);
                 renderer1.updateGraphics();
                 movementHorizontal = 0;
                 rotation = 0;
