@@ -113,6 +113,39 @@ void RenderClass::updateGraphics()
         }
     }
 
+    BlockBody nextBody = m_tetrisGrid.getNextBlock().getBody();
+    BlockColor nextColor = m_tetrisGrid.getNextBlock().getColor();
+    BlockType nextType = m_tetrisGrid.getNextBlock().getType();
+
+    for(uint32_t blockCol = 0; blockCol < nextBody[0].size(); blockCol++)
+    {
+        for(uint32_t blockRow = 0; blockRow < nextBody.size(); blockRow++)
+        {
+            if(nextBody[blockCol][blockRow] != cEmpty)
+            {
+                sf::Sprite sprite;
+                sprite.setTexture(m_tileTextures[nextColor]);
+                switch (nextType)
+                {
+                    case tI:
+                        sprite.setPosition(sf::Vector2f(m_offsetX + 385 + (32 * blockCol), m_offsetY + 240 + (32 * blockRow)));
+                        break;
+                    case tJ:
+                    case tL:
+                    case tT:
+                    case tS:
+                    case tZ:
+                        sprite.setPosition(sf::Vector2f(m_offsetX + 385 + 16 + (32 * blockCol), m_offsetY + 240 + 16 + (32 * blockRow)));
+                        break;
+                    default:
+                        sprite.setPosition(sf::Vector2f(m_offsetX + 385 + 32 + (32 * blockCol), m_offsetY + 240 + 32 + (32 * blockRow)));
+                        break;
+                }
+                m_tileSprites.push_back(sprite);
+            }
+        }
+    }
+
     // text boxes
 
     std::stringstream ss;

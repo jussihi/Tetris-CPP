@@ -67,6 +67,8 @@ public:
     uint32_t getCurrBlockRow() { return m_currBlockRow; }
     uint32_t getCurrBlockCol() { return m_currBlockCol; }
 
+    TetrisBlock getNextBlock() const { return m_nextBlock; }
+
     void tryMoveRotateCurrentBlock(const int32_t& w_movementHorizontal, const int32_t& w_rotation);
 
     void removeFullRows();
