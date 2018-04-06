@@ -16,6 +16,9 @@ static const double cTickRate = 1.0 / 100.0;
 int main(void)
 {
     sf::RenderWindow gameWindow(sf::VideoMode(1410, 960), "Classic tetris");
+    gameWindow.setFramerateLimit(cFPS);
+
+
 
     // initialize game params here
     TetrisGrid tetrisGrid(20, 10);
@@ -74,28 +77,17 @@ int main(void)
                 default:
                     break;
             }
-            softDrop = setSoft;
         }
+
+        softDrop = setSoft;
 
 
         if(gameState == sPlay)
         {
-            if(tickClock.getElapsedTime().asSeconds() >= cDeltaTime)
-            {
-                tickClock.restart();
-                tetrisGame->tick(movementHorizontal, rotation, softDrop);
-                renderer1.updateGraphics();
-                movementHorizontal = 0;
-                rotation = 0;
-            }
-               /*
-            // would it be better left this be as it was in the last call?
-            if(gfxClock.getElapsedTime().asSeconds() >= cDeltaTime)
-            {
-                gfxClock.restart();
-
-            }
-            */
+			tetrisGame->tick(movementHorizontal, rotation, softDrop);
+			renderer1.updateGraphics();
+			movementHorizontal = 0;
+			rotation = 0;
         }
 
         if(gameState == sQuit)
@@ -103,8 +95,6 @@ int main(void)
             break;
         }
     }
-
-    std::cout << "out" << std::endl;
 
     return 0;
 }
