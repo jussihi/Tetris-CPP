@@ -18,13 +18,20 @@
 
 RenderClass::RenderClass(TetrisGrid& w_tetrisGrid, sf::RenderWindow& w_gameWindow, const uint32_t& w_offsetX, const uint32_t& w_offsetY, const bool& multiPlayer) : m_tetrisGrid(w_tetrisGrid), m_gameWindow(w_gameWindow), m_offsetX(w_offsetX), m_offsetY(w_offsetY)
 {
-    m_tileTextures.resize(7);
-    m_tileTextures[1].loadFromFile("../textures/blue.png");
-    m_tileTextures[2].loadFromFile("../textures/red.png");
-    m_tileTextures[3].loadFromFile("../textures/lblue.png");
-    m_tileTextures[4].loadFromFile("../textures/cyan.png");
-    m_tileTextures[5].loadFromFile("../textures/green.png");
-    m_tileTextures[6].loadFromFile("../textures/pink.png");
+    std::stringstream ss;
+
+    m_tileTextures.resize(10);
+    for(uint32_t i = 0; i < 10; i++)
+    {
+        m_tileTextures[i].resize(3);
+        for(uint32_t j = 0; j < 3; j++)
+        {
+            ss << "../textures/blocks/" << i << "-" << j << ".png";
+            m_tileTextures[i][j].loadFromFile(ss.str());
+            ss.clear();
+            ss.str(std::string());
+        }
+    }
 
     m_font.loadFromFile("../textures/NESFont.ttf");
 
@@ -32,7 +39,7 @@ RenderClass::RenderClass(TetrisGrid& w_tetrisGrid, sf::RenderWindow& w_gameWindo
 
     m_spriteBG = sf::Sprite(m_texBG);
 
-    std::stringstream ss;
+
 
     // text boxes
     // MAKE SINGLE PLAYER VARIANTS
@@ -65,10 +72,10 @@ RenderClass::RenderClass(TetrisGrid& w_tetrisGrid, sf::RenderWindow& w_gameWindo
     ss.str(std::string());
 
     ss << "LEVEL\n  " << std::setfill('0') << std::setw(2) << w_tetrisGrid.getLevel();
-    m_level.setFont(m_font);
-    m_level.setString(ss.str());
-    m_level.setCharacterSize(FONTSIZE);
-    m_level.setPosition(sf::Vector2f(m_offsetX + 385, m_offsetY + 440 ));
+    m_levelText.setFont(m_font);
+    m_levelText.setString(ss.str());
+    m_levelText.setCharacterSize(FONTSIZE);
+    m_levelText.setPosition(sf::Vector2f(m_offsetX + 385, m_offsetY + 440 ));
 }
 
 
@@ -81,6 +88,8 @@ void RenderClass::updateGraphics()
 {
     m_tileSprites.clear();
 
+    m_level = m_tetrisGrid.getLevel();
+
     for(uint32_t col = 0; col < m_tetrisGrid.getCols(); col++)
     {
         for(uint32_t row = 0; row < m_tetrisGrid.getRows(); row++)
@@ -89,7 +98,7 @@ void RenderClass::updateGraphics()
             if(currColor != cEmpty)
             {
                 sf::Sprite sprite;
-                sprite.setTexture(m_tileTextures[currColor]);
+                sprite.setTexture(m_tileTextures[m_level][currColor]);
                 sprite.setPosition(sf::Vector2f(m_offsetX + 32 * col, m_offsetY +  32 * row));
                 m_tileSprites.push_back(sprite);
             }
@@ -103,10 +112,10 @@ void RenderClass::updateGraphics()
     {
         for(uint32_t blockRow = 0; blockRow < currBody.size(); blockRow++)
         {
-            if(currBody[blockCol][blockRow] != cEmpty)
+            if(currBody[blockCol][blockRow] != false)
             {
                 sf::Sprite sprite;
-                sprite.setTexture(m_tileTextures[currColor]);
+                sprite.setTexture(m_tileTextures[m_level][currColor]);
                 sprite.setPosition(sf::Vector2f(m_offsetX + 32 * (blockCol + m_tetrisGrid.getCurrBlockCol()), m_offsetY +  32 * (blockRow + m_tetrisGrid.getCurrBlockRow())));
                 m_tileSprites.push_back(sprite);
             }
@@ -121,10 +130,10 @@ void RenderClass::updateGraphics()
     {
         for(uint32_t blockRow = 0; blockRow < nextBody.size(); blockRow++)
         {
-            if(nextBody[blockCol][blockRow] != cEmpty)
+            if(nextBody[blockCol][blockRow] != false)
             {
                 sf::Sprite sprite;
-                sprite.setTexture(m_tileTextures[nextColor]);
+                sprite.setTexture(m_tileTextures[m_level][nextColor]);
                 switch (nextType)
                 {
                     case tI:
@@ -162,8 +171,8 @@ void RenderClass::updateGraphics()
     ss.clear();
     ss.str(std::string());
 
-    ss << "LEVEL\n  " << std::setfill('0') << std::setw(2) << m_tetrisGrid.getLevel();
-    m_level.setString(ss.str());
+    ss << "LEVEL\n  " << std::setfill('0') << std::setw(2) << m_level;
+    m_levelText.setString(ss.str());
 
     // update screen
     m_gameWindow.clear();
@@ -171,7 +180,7 @@ void RenderClass::updateGraphics()
     m_gameWindow.draw(m_score);
     m_gameWindow.draw(m_lines);
     m_gameWindow.draw(m_nextText);
-    m_gameWindow.draw(m_level);
+    m_gameWindow.draw(m_levelText);
     for(auto it = m_tileSprites.begin(); it != m_tileSprites.end(); it++)
     {
         m_gameWindow.draw(*it);

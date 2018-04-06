@@ -13,7 +13,7 @@
 /*
  *  TETRIS BLOCK CLASS FUNCTION
  */
-TetrisBlock::TetrisBlock(const BlockType w_type) : m_blockType(w_type), m_blockColor(cBlue), m_currRotation(0)
+TetrisBlock::TetrisBlock(const BlockType w_type, const BlockColor w_color) : m_blockType(w_type), m_blockColor(w_color), m_currRotation(0)
 {
     // ugly hard coded way to
     // store the block body
@@ -83,13 +83,15 @@ BlockColor TetrisBlock::getColor() const
 
 /*
  *  TETRIS PLAYGRID CLASS FUNCTIONS
+ *  TODO: fix the initialization list!! bad init of currblock and nextblock!
  */
-TetrisGrid::TetrisGrid(uint32_t w_rows, uint32_t w_cols) : m_rows(w_rows), m_cols(w_cols), m_currBlockRow(0), m_currBlockCol(0), m_currBlock(tI), m_nextBlock(tI), m_score(0), m_level(0), m_startLevel(0), m_rowsCleared(0), m_levelRowsCleared(0), m_moveDownTick(0)
+TetrisGrid::TetrisGrid(uint32_t w_rows, uint32_t w_cols) : m_rows(w_rows), m_cols(w_cols), m_currBlockRow(0), m_currBlockCol(0), m_currBlock(tI, c1), m_nextBlock(tI, c1), m_score(0), m_level(0), m_startLevel(0), m_rowsCleared(0), m_levelRowsCleared(0), m_moveDownTick(0)
 {
     m_tiles.resize(w_cols);
     for(std::vector<BlockColor>& vec : m_tiles)
     {
         vec.resize(w_rows);
+        std::fill(vec.begin(), vec.end(), cEmpty);
     }
 
     // fill levels with their framerate:
@@ -163,12 +165,14 @@ bool TetrisGrid::spawnBlock()
 {
     // NES styled block spawn randomization, more info at
     // https://tetris.wiki/Tetris_(NES,_Nintendo)
-    m_currBlock = TetrisBlock(m_nextBlock.getType());
-    m_nextBlock = TetrisBlock(static_cast<BlockType>(rand() % 8));
-    if(m_nextBlock.getType() == m_currBlock.getType() || m_nextBlock.getType() == tE)
+    m_currBlock = TetrisBlock(m_nextBlock.getType(), static_cast<BlockColor>(m_nextBlock.getType() % 3));
+    BlockType nextType = static_cast<BlockType>((rand() % 8) - 1);
+
+    if(nextType == m_currBlock.getType() || nextType == tE)
     {
-        m_nextBlock = TetrisBlock(static_cast<BlockType>(rand() % 7 + 1));
+        nextType = static_cast<BlockType>(rand() % 7);
     }
+    m_nextBlock = TetrisBlock(nextType, static_cast<BlockColor>(nextType % 3));
 
     switch (m_currBlock.getType())
     {

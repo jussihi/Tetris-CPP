@@ -23,9 +23,11 @@ public:
 private:
     TetrisGrid& m_tetrisGrid;
     sf::RenderWindow& m_gameWindow;
-    std::vector<sf::Texture> m_tileTextures;
+    std::vector<std::vector<sf::Texture>> m_tileTextures;
     std::vector<sf::Sprite> m_tileSprites;
     sf::Font m_font;
+
+    uint32_t m_level;
 
     sf::Texture m_texBG;
     sf::Sprite m_spriteBG;
@@ -42,7 +44,7 @@ private:
     sf::Text m_lines;
     sf::Text m_playerText;
     sf::Text m_nextText;
-    sf::Text m_level;
+    sf::Text m_levelText;
 };
 
 #endif /* RENDERCLASSES_HPP_ */

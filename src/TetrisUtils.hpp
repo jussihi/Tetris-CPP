@@ -21,24 +21,21 @@ enum GameState {
 };
 
 enum BlockType {
-    tE = 0,
-    tI,
-    tO,
-    tT,
-    tS,
+    tE = -1,
+    tT = 0,
     tZ,
     tJ,
-    tL
+    tO,
+    tL,
+    tS,
+    tI
 };
 
 enum BlockColor {
-    cEmpty = 0,
-    cBlue,
-    cRed,
-    cLBlue,
-    cCyan,
-    cGreen,
-    cPink
+    cEmpty = -1,
+    c1 = 0,
+    c2,
+    c3
 };
 
 typedef std::vector<std::vector<bool>> BlockBody;

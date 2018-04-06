@@ -16,7 +16,7 @@ static const double cTickRate = 1.0 / 100.0;
 int main(void)
 {
     sf::RenderWindow gameWindow(sf::VideoMode(1410, 960), "Classic tetris");
-    gameWindow.setFramerateLimit(cFPS);
+    gameWindow.setFramerateLimit(60);
 
 
 
@@ -84,15 +84,15 @@ int main(void)
 
         if(gameState == sPlay)
         {
-			tetrisGame->tick(movementHorizontal, rotation, softDrop);
-			renderer1.updateGraphics();
-			movementHorizontal = 0;
-			rotation = 0;
+            tetrisGame->tick(movementHorizontal, rotation, softDrop);
+            renderer1.updateGraphics();
+            movementHorizontal = 0;
+            rotation = 0;
         }
 
         if(gameState == sQuit)
         {
-            break;
+        	break;
         }
     }
 

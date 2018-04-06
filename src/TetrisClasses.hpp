@@ -14,7 +14,7 @@
 
 class TetrisBlock {
 public:
-    TetrisBlock(const BlockType w_type);
+    TetrisBlock(const BlockType w_type, const BlockColor w_color);
     ~TetrisBlock();
 
     const BlockType& getType() const;
